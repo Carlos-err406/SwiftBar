@@ -157,6 +157,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, SPUStandardUserDriverDelegat
     }
 
     func applicationDidFinishLaunching(_: Notification) {
+        installEditingMenu(in: NSApplication.shared)
         // Wire up the plugin manager so tests that reference
         // `delegate.pluginManager` have a usable instance, then bail out before
         // touching anything that keeps the runloop alive (Sparkle, the
