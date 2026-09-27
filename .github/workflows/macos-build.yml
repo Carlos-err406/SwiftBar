@@ -1,0 +1,55 @@
+name: macOS build
+
+on:
+  push:
+    branches: [main, 'codex/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: macos-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test
+        run: |
+          xcodebuild test \
+            -project SwiftBar.xcodeproj -scheme SwiftBar \
+            -destination 'platform=macOS' \
+            -derivedDataPath build -resultBundlePath TestResults.xcresult \
+            -parallel-testing-enabled NO \
+            CODE_SIGNING_ALLOWED=NO
+      - name: Build universal app
+        run: |
+          xcodebuild build \
+            -project SwiftBar.xcodeproj -scheme SwiftBar \
+            -configuration Release -destination 'generic/platform=macOS' \
+            -derivedDataPath build \
+            ARCHS='arm64 x86_64' ONLY_ACTIVE_ARCH=NO \
+            CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY=- DEVELOPMENT_TEAM=
+      - name: Verify and package
+        run: |
+          app=build/Build/Products/Release/SwiftBar.app
+          codesign --verify --deep --strict "$app"
+          lipo -verify_arch arm64 x86_64 "$app/Contents/MacOS/SwiftBar"
+          mkdir -p artifacts
+          ditto -c -k --sequesterRsrc --keepParent "$app" artifacts/SwiftBar-headerless-universal.zip
+          cp LICENSE artifacts/LICENSE
+          shasum -a 256 artifacts/SwiftBar-headerless-universal.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SwiftBar-headerless-universal
+          path: artifacts/
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: test-results
+          path: TestResults.xcresult

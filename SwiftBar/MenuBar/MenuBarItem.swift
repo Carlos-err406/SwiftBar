@@ -513,9 +513,8 @@ extension MenubarItem {
         let urlRequest = URLRequest(url: url)
         webPopover.behavior = .transient
         webPopover.contentViewController = NSHostingController(
-            rootView: WebPanelView(
+            rootView: WebView(
                 request: urlRequest,
-                name: plugin?.name ?? "",
                 zoomFactor: zoom
             )
         )
