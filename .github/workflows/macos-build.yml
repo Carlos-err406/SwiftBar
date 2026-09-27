@@ -25,7 +25,7 @@ jobs:
             -destination 'platform=macOS' \
             -derivedDataPath build -resultBundlePath TestResults.xcresult \
             -parallel-testing-enabled NO \
-            CODE_SIGNING_ALLOWED=NO
+            CODE_SIGNING_ALLOWED=NO EXPANDED_CODE_SIGN_IDENTITY_NAME=-
       - name: Build universal app
         run: |
           xcodebuild build \
@@ -33,7 +33,7 @@ jobs:
             -configuration Release -destination 'generic/platform=macOS' \
             -derivedDataPath build \
             ARCHS='arm64 x86_64' ONLY_ACTIVE_ARCH=NO \
-            CODE_SIGNING_ALLOWED=NO
+            CODE_SIGNING_ALLOWED=NO EXPANDED_CODE_SIGN_IDENTITY_NAME=-
       - name: Verify and package
         run: |
           app=build/Build/Products/Release/SwiftBar.app
