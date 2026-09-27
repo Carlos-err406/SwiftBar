@@ -1463,7 +1463,7 @@ struct SwiftBarIntegrationTests {
         #expect(merged[2] === shortcut)
     }
 
-    @Test func testUnloadPlugins_preservesDisabledStateForModifiedPlugins() async throws {
+    @MainActor @Test func testUnloadPlugins_preservesDisabledStateForModifiedPlugins() async throws {
         let manager = PluginManager()
         let originalDisabledPlugins = manager.prefs.disabledPlugins
         defer { manager.prefs.disabledPlugins = originalDisabledPlugins }
@@ -1479,7 +1479,7 @@ struct SwiftBarIntegrationTests {
         #expect(manager.plugins.isEmpty)
     }
 
-    @Test func testUnloadPlugins_clearsDisabledStateForRemovedPlugins() async throws {
+    @MainActor @Test func testUnloadPlugins_clearsDisabledStateForRemovedPlugins() async throws {
         let manager = PluginManager()
         let originalDisabledPlugins = manager.prefs.disabledPlugins
         defer { manager.prefs.disabledPlugins = originalDisabledPlugins }
