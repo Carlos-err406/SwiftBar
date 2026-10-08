@@ -387,6 +387,8 @@ class PluginMetadata: ObservableObject {
                 value = collapseOnClose ? "true" : ""
             case .persistentWebView:
                 value = persistentWebView ? "true" : ""
+            case .keepWebViewOpenForOverlays:
+                value = keepWebViewOpenForOverlays ? "true" : ""
             case .useTrailingStreamSeparator:
                 value = useTrailingStreamSeparator ? "true" : ""
             case .alwaysVisible:
