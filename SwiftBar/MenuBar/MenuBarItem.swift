@@ -79,7 +79,6 @@ class MenubarItem: NSObject {
     private var popoverDismissMonitor: Any?
     private var webPopoverOverlayObservers: [(center: NotificationCenter, token: NSObjectProtocol)] = []
     private var webPopoverRestoreLevel: (window: NSWindow, level: NSWindow.Level)?
-    private var webPopoverPreviousApp: NSRunningApplication?
     private let popoverDismissEventMask: NSEvent.EventTypeMask = [.leftMouseDown, .rightMouseDown]
 
     var titleLines: [String] = [] {
@@ -521,7 +520,6 @@ extension MenubarItem {
             webPopover.contentViewController?.view.window?.becomeKey()
             startPopupMonitor()
             if webPopoverBehavior == .applicationDefined {
-                activateForWebPopover()
                 startWebPopoverOverlayObservers()
             }
         }
@@ -602,34 +600,6 @@ extension MenubarItem {
             (NotificationCenter.default, resignKey),
             (NotificationCenter.default, becomeKey),
         ]
-    }
-
-    /// Overlays such as Raycast paste into the frontmost app, which stays the previous
-    /// app unless SwiftBar activates itself while the popover is open.
-    private func activateForWebPopover() {
-        let frontmost = NSWorkspace.shared.frontmostApplication
-        if frontmost != NSRunningApplication.current {
-            webPopoverPreviousApp = frontmost
-        }
-        // Cooperative NSApp.activate() is refused for accessory apps while another app is
-        // frontmost (verified on macOS 26), so this deliberately uses the deprecated call.
-        NSApp.activate(ignoringOtherApps: true)
-    }
-
-    /// Hands focus back to the app that was frontmost before the popover opened, unless
-    /// the user moved on to another app or a SwiftBar window in the meantime.
-    private func returnFocusAfterWebPopover() {
-        guard let previous = webPopoverPreviousApp else { return }
-        webPopoverPreviousApp = nil
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) { [weak self] in
-            guard let self, NSApp.isActive, NSApp.keyWindow == nil, !webPopover.isShown,
-                  !previous.isTerminated
-            else { return }
-            if #available(macOS 14.0, *) {
-                NSApp.yieldActivation(to: previous)
-            }
-            previous.activate(options: [])
-        }
     }
 
     private func stopWebPopoverOverlayObservers() {
@@ -2199,7 +2169,6 @@ extension MenubarItem: NSPopoverDelegate {
         // Escape closes the popover without going through hideWebPopover.
         if notification.object as? NSPopover == webPopover {
             stopWebPopoverOverlayObservers()
-            returnFocusAfterWebPopover()
         }
     }
 
@@ -2228,8 +2197,6 @@ extension MenubarItem: NSPopoverDelegate {
             // Stop the popup monitor when detached to prevent auto-closing on outside clicks
             stopPopupMonitor()
             stopWebPopoverOverlayObservers()
-            // The detached window is now a regular SwiftBar window; keep focus there.
-            webPopoverPreviousApp = nil
         }
     }
 }
