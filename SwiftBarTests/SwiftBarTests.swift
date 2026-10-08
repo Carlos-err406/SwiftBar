@@ -1718,7 +1718,12 @@ struct PluginMetadataEnvironmentParsingTests {
                 "VAR_SIMPLE should be present either quoted or unquoted")
     }
 
-    @Test func testEnvironmentParsing_EqualsSeparator() throws {
+    @Test func testKeepWebViewOpenForOverlaysParsing() throws {
+        #expect(PluginMetadata.parser(script: "<swiftbar.keepWebViewOpenForOverlays>true</swiftbar.keepWebViewOpenForOverlays>").keepWebViewOpenForOverlays)
+        #expect(PluginMetadata.parser(script: "<xbar.title>Plain</xbar.title>").keepWebViewOpenForOverlays == false)
+    }
+
+        @Test func testEnvironmentParsing_EqualsSeparator() throws {
         let script = "<swiftbar.environment>[MY_VAR=value]</swiftbar.environment>"
         let metadata = PluginMetadata.parser(script: script)
         #expect(metadata.environment["MY_VAR"] == "value")
@@ -5001,7 +5006,15 @@ struct FoldMenuItemBuildTests {
         #expect(foldView.isFolded == false)
     }
 
-    @MainActor @Test func testMenuDidClose_collapseOnCloseResetsFoldsToCollapsed() throws {
+    @MainActor @Test func testWebPopoverBehavior_followsKeepWebViewOpenForOverlays() throws {
+        let item = makeMenuBarItem()
+        item.plugin?.metadata = PluginMetadata()
+        #expect(item.webPopoverBehavior == .transient)
+        item.plugin?.metadata = PluginMetadata(keepWebViewOpenForOverlays: true)
+        #expect(item.webPopoverBehavior == .applicationDefined)
+    }
+
+        @MainActor @Test func testMenuDidClose_collapseOnCloseResetsFoldsToCollapsed() throws {
         let item = makeMenuBarItem()
         item.plugin?.metadata = PluginMetadata(collapseOnClose: true)
 
