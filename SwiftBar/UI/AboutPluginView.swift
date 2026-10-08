@@ -61,7 +61,7 @@ struct AboutPluginView: View {
                 }
 
                 // Display additional plugin settings
-                if md.type != .Executable || md.runInBash == false || md.refreshOnOpen || md.collapseOnClose || md.persistentWebView {
+                if md.type != .Executable || md.runInBash == false || md.refreshOnOpen || md.collapseOnClose || md.persistentWebView || md.keepWebViewOpenForOverlays {
                     Divider().padding(.vertical, 4)
                     Text("Settings:").font(.headline).padding(.top, 4)
 
@@ -87,6 +87,10 @@ struct AboutPluginView: View {
 
                     if md.persistentWebView {
                         LabelView(label: "Persistent WebView:", value: "true")
+                    }
+
+                    if md.keepWebViewOpenForOverlays {
+                        LabelView(label: "Keep WebView Open for Overlays:", value: "true")
                     }
                 }
 

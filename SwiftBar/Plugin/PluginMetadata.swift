@@ -56,6 +56,7 @@ enum PluginMetadataOption: String, CaseIterable {
     case refreshOnOpen
     case collapseOnClose
     case persistentWebView
+    case keepWebViewOpenForOverlays
     case useTrailingStreamSeparator
     case alwaysVisible
 
@@ -63,7 +64,7 @@ enum PluginMetadataOption: String, CaseIterable {
         switch self {
         case .title, .version, .author, .github, .desc, .about, .image, .dependencies:
             [.bitbar, .xbar]
-        case .runInBash, .environment, .droptypes, .schedule, .type, .hideAbout, .hideRunInTerminal, .hideLastUpdated, .hideDisablePlugin, .hideSwiftBar, .refreshOnOpen, .collapseOnClose, .persistentWebView, .useTrailingStreamSeparator, .alwaysVisible:
+        case .runInBash, .environment, .droptypes, .schedule, .type, .hideAbout, .hideRunInTerminal, .hideLastUpdated, .hideDisablePlugin, .hideSwiftBar, .refreshOnOpen, .collapseOnClose, .persistentWebView, .keepWebViewOpenForOverlays, .useTrailingStreamSeparator, .alwaysVisible:
             [.swiftbar]
         }
     }
@@ -91,6 +92,7 @@ class PluginMetadata: ObservableObject {
     @Published var refreshOnOpen: Bool
     @Published var collapseOnClose: Bool
     @Published var persistentWebView: Bool
+    @Published var keepWebViewOpenForOverlays: Bool
     @Published var useTrailingStreamSeparator: Bool
     @Published var alwaysVisible: Bool
     @Published var variables: [PluginVariable]
@@ -112,7 +114,7 @@ class PluginMetadata: ObservableObject {
         return date == Date.distantFuture ? nil : date
     }
 
-    init(name: String = "", version: String = "", author: String = "", github: String = "", desc: String = "", previewImageURL: URL? = nil, dependencies: [String] = [], aboutURL: URL? = nil, dropTypes: [String] = [], schedule: String = "", type: PluginType = .Executable, hideAbout: Bool = false, hideRunInTerminal: Bool = false, hideLastUpdated: Bool = false, hideDisablePlugin: Bool = false, hideSwiftBar: Bool = false, environment: [String: String] = [:], runInBash: Bool = true, refreshOnOpen: Bool = false, collapseOnClose: Bool = false, persistentWebView: Bool = false, useTrailingStreamSeparator: Bool = false, alwaysVisible: Bool = false, variables: [PluginVariable] = []) {
+    init(name: String = "", version: String = "", author: String = "", github: String = "", desc: String = "", previewImageURL: URL? = nil, dependencies: [String] = [], aboutURL: URL? = nil, dropTypes: [String] = [], schedule: String = "", type: PluginType = .Executable, hideAbout: Bool = false, hideRunInTerminal: Bool = false, hideLastUpdated: Bool = false, hideDisablePlugin: Bool = false, hideSwiftBar: Bool = false, environment: [String: String] = [:], runInBash: Bool = true, refreshOnOpen: Bool = false, collapseOnClose: Bool = false, persistentWebView: Bool = false, keepWebViewOpenForOverlays: Bool = false, useTrailingStreamSeparator: Bool = false, alwaysVisible: Bool = false, variables: [PluginVariable] = []) {
         self.name = name
         self.version = version
         self.author = author
@@ -134,6 +136,7 @@ class PluginMetadata: ObservableObject {
         self.refreshOnOpen = refreshOnOpen
         self.collapseOnClose = collapseOnClose
         self.persistentWebView = persistentWebView
+        self.keepWebViewOpenForOverlays = keepWebViewOpenForOverlays
         self.useTrailingStreamSeparator = useTrailingStreamSeparator
         self.alwaysVisible = alwaysVisible
         self.variables = variables
@@ -305,6 +308,7 @@ class PluginMetadata: ObservableObject {
                               refreshOnOpen: getTagValue(tag: .refreshOnOpen) == "true" ? true : false,
                               collapseOnClose: getTagValue(tag: .collapseOnClose) == "true",
                               persistentWebView: getTagValue(tag: .persistentWebView) == "true" ? true : false,
+                              keepWebViewOpenForOverlays: getTagValue(tag: .keepWebViewOpenForOverlays) == "true",
                               useTrailingStreamSeparator: getTagValue(tag: .useTrailingStreamSeparator) == "true" ? true : false,
                               alwaysVisible: getTagValue(tag: .alwaysVisible) == "true",
                               variables: variables)

@@ -240,6 +240,7 @@ You can configure multiple schedules, using the sepparator `|`:
 * `<swiftbar.type>streamable</swiftbar.type>` - mark plugin as Streamable
 * `<swiftbar.environment>[var1=default value, var2=default value, ... ]</swiftbar.environment>` - this variables will be passed in plugin's environment, in later release SwiftBar will provide a UI to change values for these variables.
 * `<swiftbar.persistentWebView>true</swiftbar.persistentWebView>` - makes WebView persistent, so it doesn't reload on each menu bar click
+* `<swiftbar.keepWebViewOpenForOverlays>true</swiftbar.keepWebViewOpenForOverlays>` - keeps the WebView popover open while overlay apps without a Dock icon (Raycast, Alfred, Spotlight) take focus, so you can paste from their clipboard history; clicking a regular window or switching to a regular app still closes it
 
 #### Metadata for Binary Plugins
 
