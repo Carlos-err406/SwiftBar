@@ -40,3 +40,29 @@ class AppMenu: NSMenu {
         NSApp.terminate(self)
     }
 }
+
+/// AppKit dispatches Command-C/V through menu key equivalents before WebKit.
+/// Keep targets nil so the active text field or web view receives each action.
+@MainActor
+func installEditingMenu(in application: NSApplication) {
+    let menu = application.mainMenu ?? AppMenu(title: "SwiftBar")
+    let identifier = NSUserInterfaceItemIdentifier("SwiftBar.Edit")
+    guard !menu.items.contains(where: { $0.identifier == identifier }) else { return }
+
+    let editItem = NSMenuItem(title: "Edit", action: nil, keyEquivalent: "")
+    editItem.identifier = identifier
+    let editMenu = NSMenu(title: "Edit")
+    for (title, action, key) in [
+        ("Cut", "cut:", "x"),
+        ("Copy", "copy:", "c"),
+        ("Paste", "paste:", "v"),
+        ("Select All", "selectAll:", "a"),
+    ] {
+        let item = NSMenuItem(title: title, action: Selector(action), keyEquivalent: key)
+        item.keyEquivalentModifierMask = .command
+        editMenu.addItem(item)
+    }
+    editItem.submenu = editMenu
+    menu.addItem(editItem)
+    application.mainMenu = menu
+}
