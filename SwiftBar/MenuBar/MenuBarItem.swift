@@ -611,11 +611,9 @@ extension MenubarItem {
         if frontmost != NSRunningApplication.current {
             webPopoverPreviousApp = frontmost
         }
-        if #available(macOS 14.0, *) {
-            NSApp.activate()
-        } else {
-            NSApp.activate(ignoringOtherApps: true)
-        }
+        // Cooperative NSApp.activate() is refused for accessory apps while another app is
+        // frontmost (verified on macOS 26), so this deliberately uses the deprecated call.
+        NSApp.activate(ignoringOtherApps: true)
     }
 
     /// Hands focus back to the app that was frontmost before the popover opened, unless
